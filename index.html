@@ -37,7 +37,7 @@
 
 		for (var i = 0; i<7; i++){
 			cards[i].beginFill(0xFF0000+i*80);
-			cards[i].drawRoundedRect(5, 10+i*50, window.innerWidth-10, window.innerHeight-10, 25);
+			cards[i].drawRoundedRect(5, 10+i*50, 10, 10, 5);
 			cards[i].endFill();
 			stage.addChild(cards[i]);
 		}
