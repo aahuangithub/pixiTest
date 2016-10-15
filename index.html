@@ -24,20 +24,23 @@
 	var stage = new PIXI.Container();
 	
 
-	var rectangle = new PIXI.Graphics();
-	rectangle.beginFill(0xFF0000);
-	rectangle.drawRect(0, 100, 100, 100);
-	rectangle.endFill();
+	var cards = [];
+	for (var i = 0; i<7; i++){
+		cards.push(new PIXI.Graphics());
+		
+	}
+
 	gameLoop();
 	
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
-		rectangle.x += xAdd;
-		if (rectangle.x <= 0 || rectangle.x >= window.innerWidth-100){
-			xAdd = -1*xAdd;
+
+		for (var i = 0; i<7; i++){
+			cards[i].beginFill(0xFF0000+i*80);
+			cards[i].drawRoundedRect(5, 10+i*50, window.innerWidth-10, window.innerHeight-10, 25);
+			cards[i].endFill();
+			stage.addChild(cards[i]);
 		}
-		stage.addChild(rectangle);
-		
 		//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
 		renderer.render(stage);
 	}
