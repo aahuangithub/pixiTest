@@ -8,7 +8,10 @@
 <script> 
 	//make sure PIXI is working
 	console.log(PIXI); 
+
+	//initializes variables
 	var xAdd = 10;
+	var cards = [];
 	
 	//SETUP
 	//Create the renderer (DON'T CHANGE THIS USUALLY)
@@ -23,24 +26,44 @@
 	//Create a CONTAINER object called the `stage`
 	var stage = new PIXI.Container();
 	
+	PIXI.loader
+		.add ('BlankCard.jpg')
+		.on("progress", loadProgressHandler)
+		.load (); //you can put a function name within the parens
+	
+	function loadProgressHandler(loader, resource) {
 
-	var cards = [];
+		  //Display the file `url` currently being loaded
+		  console.log("loading: " + resource.url); 
+
+		  //Display the precentage of files currently loaded
+		  console.log("progress: " + loader.progress + "%"); 
+
+		  //If you gave your files names as the first argument 
+		  //of the `add` method, you can access them like this
+		  //console.log("loading: " + resource.name);
+	}
+
+	function setup() {
+		console.log("All files loaded");
+	}
+
 	for (var i = 0; i<7; i++){
-		cards.push(new PIXI.Graphics());
+		cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.jpg"].texture));
+		cards[i].x = 200;
+		cards[i].width = 900;
+		stage.addChild(cards[i]);
 		
 	}
 
-	gameLoop();
+	renderer.render(stage);
+
+
+	//gameLoop();
 	
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
 
-		for (var i = 0; i<7; i++){
-			cards[i].beginFill(0xFF0000+i*80);
-			cards[i].drawRoundedRect(5, 10+i*50, 10, 10, 5);
-			cards[i].endFill();
-			stage.addChild(cards[i]);
-		}
 		//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
 		renderer.render(stage);
 	}
