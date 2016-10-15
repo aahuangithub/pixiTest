@@ -11,7 +11,7 @@
 
 	//initializes variables
 	var cards = [];
-	
+	var state = firstFunc;
 	//SETUP
 	//Create the renderer (DON'T CHANGE THIS USUALLY)
 	var renderer = PIXI.autoDetectRenderer(256, 256, {antialias: false, transparent: false, resolution: 1});
@@ -44,31 +44,35 @@
 	}
 
 function setup() {
-    for (var i = 0; i< 19; i++){
+    for (var i = 0; i< 7; i++){
         cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.png"].texture));
-        cards[i].position.y = -20+i*20;
+        cards[i].position.y = renderer.height+i*20;
         cards[i].width = renderer.width;
         cards[i].height = renderer.height;
         stage.addChild(cards[i]);
+        gameLoop();
     }
-  //var cat = new Sprite(TextureCache["images/cat.png"]); also ok
-
   //Render the stage   
-  renderer.render(stage);
+  //renderer.render(stage);
 }
 
 
-
-
-	//gameLoop();
-	
-	function gameLoop() {
-		requestAnimationFrame(gameLoop);
-
-		//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
-		renderer.render(stage);
+function firstFunc(){
+	for (var i = 0; i<cards.length; i++){
+		if (cards[i].y>i*2){		
+			cards[i].y-=8;
+		}
 	}
-	
+}
+
+//gameLoop();
+function gameLoop() {
+	requestAnimationFrame(gameLoop);
+	state();
+	//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
+	renderer.render(stage);
+}
+
 
 
 
