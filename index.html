@@ -10,7 +10,6 @@
 	console.log(PIXI); 
 
 	//initializes variables
-	var xAdd = 10;
 	var cards = [];
 	
 	//SETUP
@@ -27,9 +26,9 @@
 	var stage = new PIXI.Container();
 	
 	PIXI.loader
-		.add ('BlankCard.jpg')
+		.add ('BlankCard.png')
 		.on("progress", loadProgressHandler)
-		.load (); //you can put a function name within the parens
+		.load (setup); //you can put a function name within the parens
 	
 	function loadProgressHandler(loader, resource) {
 
@@ -44,19 +43,21 @@
 		  //console.log("loading: " + resource.name);
 	}
 
-	function setup() {
-		console.log("All files loaded");
-	}
+function setup() {
+    for (var i = 0; i< 19; i++){
+        cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.png"].texture));
+        cards[i].position.y = -20+i*20;
+        cards[i].width = renderer.width;
+        cards[i].height = renderer.height;
+        stage.addChild(cards[i]);
+    }
+  //var cat = new Sprite(TextureCache["images/cat.png"]); also ok
 
-	for (var i = 0; i<7; i++){
-		cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.jpg"].texture));
-		cards[i].x = 200;
-		cards[i].width = 900;
-		stage.addChild(cards[i]);
-		
-	}
+  //Render the stage   
+  renderer.render(stage);
+}
 
-	renderer.render(stage);
+
 
 
 	//gameLoop();
