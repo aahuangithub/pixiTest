@@ -55,6 +55,7 @@
 
 
 	function setup() {
+		renderer.backgroundColor = 0x003D30;
 	    for (let i = 0; i< 7; i++){
 	        cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.png"].texture));
 	        cards[i].position.y = renderer.height+i*20+5;
@@ -64,8 +65,8 @@
 	        stage.addChild(cards[i]);
 	    }
 	    blackCard = new PIXI.Sprite(PIXI.loader.resources["BlackCard.png"].texture);
-	    blackCard.width = renderer.width*1.1;
-	    blackCard.position.x = -0.05*renderer.width;
+	    blackCard.width = renderer.width*1.07;
+	    blackCard.position.x = -0.035*renderer.width;
 	    blackCard.position.y = renderer.height;
 	    blackCard.height = renderer.height;
 	    t.makeInteractive(blackCard);
@@ -78,7 +79,7 @@
 	function firstFunc(){
 		for (let i = 0; i<cards.length; i++){
 			if (cards[i].position.y>i*10){
-				cards[i].position.y-=renderer.height*0.1;
+				cards[i].position.y-=renderer.height*0.05;
 			}
 		}
 		if (blackCard.position.y > renderer.height*0.7){
