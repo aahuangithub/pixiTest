@@ -82,9 +82,9 @@
 	    blackCard.position.x = -0.035*renderer.width;
 	    blackCard.position.y = blackCard.height = renderer.height;
 	    blackCard.interactive=true;
-		blackCard.on('mousedown', () => {oldPointerY = mouseY; mousehold=true;});
-		blackCard.on('mousemove',()=>{if (mousehold){blackCard.position.y-=0.5*(oldPointerY-mouseY);}})
-		blackCard.on('mouseup',()=>{mousehold=false;})
+		blackCard.on('touchstart', () => {oldPointerY = mouseY; mousehold=true;});
+		blackCard.on('touchmove',()=>{if (mousehold){blackCard.position.y-=0.5*(oldPointerY-mouseY);}})
+		blackCard.on('touchend',()=>{mousehold=false;})
 	    stage.addChild(blackCard);
 
 	    gameLoop();
