@@ -3,15 +3,21 @@
 <head>
 	<title>test</title>
 	<script type="text/javascript" src="pixi.min.js"></script>
+	<script src="tink.js"></script>
 </head>
 <body style = "font-size:0; padding:0; margin:0">
 <script> 
 	//make sure PIXI is working
 	console.log(PIXI); 
 
+
+
 	//initializes variables
 	var cards = [];
+	var blackCard;
 	var state = firstFunc;
+	var blackCardText = "";
+
 	//SETUP
 	//Create the renderer (DON'T CHANGE THIS USUALLY)
 	var renderer = PIXI.autoDetectRenderer(256, 256, {antialias: false, transparent: false, resolution: 1});
@@ -23,55 +29,76 @@
 	//Add the canvas to the HTML document
 	document.body.appendChild(renderer.view);
 	//Create a CONTAINER object called the `stage`
-	var stage = new PIXI.Container();
-	
-	PIXI.loader
-		.add ('BlankCard.png')
-		.on("progress", loadProgressHandler)
-		.load (setup); //you can put a function name within the parens
+	var stage = new PIXI.Container(0x000000, true);
 	
 	function loadProgressHandler(loader, resource) {
 
-		  //Display the file `url` currently being loaded
+		  //Display the file `url` and % currently being loaded
 		  console.log("loading: " + resource.url); 
-
-		  //Display the precentage of files currently loaded
 		  console.log("progress: " + loader.progress + "%"); 
 
 		  //If you gave your files names as the first argument 
 		  //of the `add` method, you can access them like this
 		  //console.log("loading: " + resource.name);
-	}
-
-function setup() {
-    for (var i = 0; i< 7; i++){
-        cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.png"].texture));
-        cards[i].position.y = renderer.height+i*20;
-        cards[i].width = renderer.width;
-        cards[i].height = renderer.height;
-        stage.addChild(cards[i]);
-        gameLoop();
-    }
-  //Render the stage   
-  //renderer.render(stage);
-}
-
-
-function firstFunc(){
-	for (var i = 0; i<cards.length; i++){
-		if (cards[i].y>i*5){		
-			cards[i].y-=8;
 		}
-	}
-}
 
-//gameLoop();
-function gameLoop() {
-	requestAnimationFrame(gameLoop);
-	state();
-	//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
-	renderer.render(stage);
-}
+	//load all images used in stage
+	PIXI.loader
+		.add ('BlankCard.png')
+		.add ('BlackCard.png')
+		.on("progress", loadProgressHandler)
+		.load (setup);
+	
+	//configure tink
+	var t = new Tink(PIXI, renderer.view);
+	pointer = t.makePointer();
+
+
+	function setup() {
+	    for (let i = 0; i< 7; i++){
+	        cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.png"].texture));
+	        cards[i].position.y = renderer.height+i*20;
+	        cards[i].width = renderer.width;
+	        cards[i].height = renderer.height;
+	        t.makeInteractive(cards[i]);
+	        stage.addChild(cards[i]);
+	    }
+	    blackCard = new PIXI.Sprite(PIXI.loader.resources["BlackCard.png"].texture);
+	    blackCard.width = renderer.width*0.95;
+	    blackCard.position.x = 0.025*renderer.width;
+	    blackCard.position.y = renderer.height;
+	    t.makeInteractive(blackCard);
+	    stage.addChild(blackCard);
+
+	    gameLoop();
+	}
+
+
+	function firstFunc(){
+		for (let i = 0; i<cards.length; i++){
+			if (cards[i].y>i*5){		
+				cards[i].y-=8;
+			}
+		}
+		if (blackCard.position.y > renderer.height*0.85){
+			blackCard.position.y-=2;
+		}
+		
+	}
+
+	function detectTouch(){
+
+	} 
+	//gameLoop();
+	function gameLoop() {
+		requestAnimationFrame(gameLoop);
+		state();
+
+		//update all tink animations
+		t.update();
+		//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
+		renderer.render(stage);
+	}
 
 
 
