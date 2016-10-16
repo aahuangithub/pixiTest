@@ -3,20 +3,19 @@
 <head>
 	<title>test</title>
 	<script type="text/javascript" src="pixi.min.js"></script>
-	<script src="tink.js"></script>
+
 </head>
 <body style = "font-size:0; padding:0; margin:0">
 <script> 
 	//make sure PIXI is working
 	console.log(PIXI); 
 
-
-
 	//initializes variables
 	var cards = [];
 	var blackCard;
 	var state = firstFunc;
 	var blackCardText = "";
+	var mouseX, mouseY, oldPointerX, oldPointerY, mousehold;
 
 	//SETUP
 	//Create the renderer (DON'T CHANGE THIS USUALLY)
@@ -49,27 +48,43 @@
 		.on("progress", loadProgressHandler)
 		.load (setup);
 	
-	//configure tink
-	var t = new Tink(PIXI, renderer.view);
-	pointer = t.makePointer();
 
+	//inherits PIXI.Sprite() and then configues some properties of it
+	BlankCard.prototype = new PIXI.Sprite(); 
+	function BlankCard(yPos){
+		this.setTexture(PIXI.loader.resources["BlankCard.png"].texture);
+		this.width = renderer.width;
+		this.height = renderer.height;
+		this.position.y = renderer.height+yPos+5;
+		this.interactive = true;
+		this.on('mousedown', ()=> {
+			console.log('itWorks')
+		});
 
+		stage.addChild(this);
+	}
+
+	var firstPress = true;
+	function detectSwipe(){
+		if(firstPress){
+			console.log( getLocalPosition(mouse));
+		}
+	}
 	function setup() {
 		renderer.backgroundColor = 0x003D30;
+	    
 	    for (let i = 0; i< 7; i++){
-	        cards.push(new PIXI.Sprite(PIXI.loader.resources["BlankCard.png"].texture));
-	        cards[i].position.y = renderer.height+i*20+5;
-	        cards[i].width = renderer.width;
-	        cards[i].height = renderer.height;
-	        t.makeInteractive(cards[i]);
-	        stage.addChild(cards[i]);
+	        cards.push(new BlankCard(i*20));
 	    }
+	    
 	    blackCard = new PIXI.Sprite(PIXI.loader.resources["BlackCard.png"].texture);
 	    blackCard.width = renderer.width*1.07;
 	    blackCard.position.x = -0.035*renderer.width;
-	    blackCard.position.y = renderer.height;
-	    blackCard.height = renderer.height;
-	    t.makeInteractive(blackCard);
+	    blackCard.position.y = blackCard.height = renderer.height;
+	    blackCard.interactive=true;
+		blackCard.on('mousedown', () => {oldPointerY = mouseY; mousehold=true;});
+		blackCard.on('mousemove',()=>{if (mousehold){blackCard.position.y-=0.5*(oldPointerY-mouseY);}})
+		blackCard.on('mouseup',()=>{mousehold=false;})
 	    stage.addChild(blackCard);
 
 	    gameLoop();
@@ -78,8 +93,8 @@
 
 	function firstFunc(){
 		for (let i = 0; i<cards.length; i++){
-			if (cards[i].position.y>i*10){
-				cards[i].position.y-=renderer.height*0.05;
+			if (cards[i].y>i*10){
+				cards[i].y-=renderer.height*0.05;
 			}
 		}
 		if (blackCard.position.y > renderer.height*0.7){
@@ -88,16 +103,15 @@
 		
 	}
 
-	function detectTouch(){
+	
 
-	} 
-	//gameLoop();
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
-		state();
+		
+		mouseX = renderer.plugins.interaction.mouse.global.x;
+		mouseY = renderer.plugins.interaction.mouse.global.y;
 
-		//update all tink animations
-		t.update();
+		state();
 		//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
 		renderer.render(stage);
 	}
