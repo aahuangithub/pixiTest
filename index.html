@@ -92,15 +92,18 @@
 
 
 	function firstFunc(){
-		for (let i = 0; i<cards.length; i++){
+
+		if (blackCard.position.y > renderer.height*0.7){
+					for (let i = 0; i<cards.length; i++){
 			if (cards[i].y>i*10){
 				cards[i].y-=renderer.height*0.05;
 			}
 		}
-		if (blackCard.position.y > renderer.height*0.7){
 			blackCard.position.y-=renderer.height*0.1;
 		}
-		state = gameLoop;
+		else{
+			state = gameLoop;
+		}
 		
 	}
 
