@@ -82,21 +82,23 @@
 	    blackCard.position.x = -0.035*renderer.width;
 	    blackCard.position.y = renderer.height;
 	    blackCard.height = renderer.height*1.5;
+	   
 	    blackCard.interactive=true;
 		blackCard.on('mousedown', () => {oldPointerY = mouseY; mousehold=true;});
-		blackCard.on('mousemove',dragBlack);
+		blackCard.on('mousemove', dragBlack);
 		blackCard.on('mouseup',()=>{mousehold=false;})
-		blackCard.on('touchstart', () => {oldPointerY = mouseY; mousehold=true;});
-		blackCard.on('touchmove',dragBlack);
+ 
+		blackCard.on('touchstart', () => {mouseY = renderer.height*0.7; mousehold=true;});
+		blackCard.on('touchmove', dragBlack);
 		blackCard.on('touchend',()=>{mousehold=false;})
-	    stage.addChild(blackCard);
 
+	    stage.addChild(blackCard);
 	    gameLoop();
 	}
-	
-	function dragBlack(){
+
+	function dragBlack(event){
 		if(mousehold){
-			blackCard.position.y=mouseY-150;
+			blackCard.position.y=event.data.getLocalPosition(stage).y-150;
 		} 
 	}
 	function resetBlackPos(x){
@@ -104,7 +106,7 @@
 			blackCard.position.y+=renderer.height*0.1;
 		}
 		if (blackCard.position.y - renderer.height*0.7 > 20 && x){
-			blackCard.position.y-=renderer.height*0.01;
+			blackCard.position.y-=renderer.height*0.015;
 		}
 	}
 
