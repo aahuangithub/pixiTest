@@ -97,7 +97,7 @@
 	}
 
 	function dragBlack(event){
-		if(mousehold){
+		if(mousehold && event.data.getLocalPosition(stage).y-150 < renderer.height*0.7){
 			blackCard.position.y=event.data.getLocalPosition(stage).y-150;
 		} 
 	}
