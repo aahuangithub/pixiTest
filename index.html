@@ -80,31 +80,41 @@
 	    blackCard = new PIXI.Sprite(PIXI.loader.resources["BlackCard.png"].texture);
 	    blackCard.width = renderer.width*1.07;
 	    blackCard.position.x = -0.035*renderer.width;
-	    blackCard.position.y = blackCard.height = renderer.height;
+	    blackCard.position.y = renderer.height;
+	    blackCard.height = renderer.height*1.5;
 	    blackCard.interactive=true;
-		blackCard.on('touch', () => {oldPointerY = mouseY; mousehold=true;});
-		blackCard.on('touchmove',()=>{blackCard.position.y=mouseY; console.log(mouseY);})
-		blackCard.on('touchend',()=>{blackCard.position.y = renderer.height*0.7;})
+		blackCard.on('mousedown', () => {oldPointerY = mouseY; mousehold=true;});
+		blackCard.on('mousemove',dragBlack);
+		blackCard.on('mouseup',()=>{mousehold=false;})
+		blackCard.on('touchstart', () => {oldPointerY = mouseY; mousehold=true;});
+		blackCard.on('touchmove',dragBlack);
+		blackCard.on('touchend',()=>{mousehold=false;})
 	    stage.addChild(blackCard);
 
 	    gameLoop();
 	}
-
+	
+	function dragBlack(){
+		if(mousehold){
+			blackCard.position.y=mouseY-150;
+		} 
+	}
+	function resetBlackPos(x){
+		if (blackCard.position.y - renderer.height*0.7 < -20 && x){
+			blackCard.position.y+=renderer.height*0.1;
+		}
+		if (blackCard.position.y - renderer.height*0.7 > 20 && x){
+			blackCard.position.y-=renderer.height*0.01;
+		}
+	}
 
 	function firstFunc(){
-
-		if (blackCard.position.y > renderer.height*0.7){
-					for (let i = 0; i<cards.length; i++){
+		for (let i = 0; i<cards.length; i++){
 			if (cards[i].y>i*10){
-				cards[i].y-=renderer.height*0.05;
+				cards[i].y-=renderer.height*0.01;
 			}
 		}
-			blackCard.position.y-=renderer.height*0.1;
-		}
-		else{
-			state = gameLoop;
-		}
-		
+		resetBlackPos(!mousehold);
 	}
 
 	
