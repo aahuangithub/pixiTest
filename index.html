@@ -3,17 +3,16 @@
 <head>
 	<title>test</title>
 	<script type="text/javascript" src="pixi.min.js"></script>
-	<script type="text/javascript" src="charm/bin/charm.js"></script>
-
+	<script type="text/javascript" src="charm/charm.js"></script>
+	<script type="text/javascript" src="tink.js"></script>
 </head>
 <body style = "font-size:0; padding:0; margin:0">
 <script> 
 	//make sure PIXI is working
 	console.log(PIXI); 
 
-	//sets up charm
-	c = new Charm(PIXI);
-	
+
+
 	//initializes variables
 	var cards = [];
 	var state = firstFunc;
@@ -32,6 +31,13 @@
 	document.body.appendChild(renderer.view);
 	//Create a CONTAINER object called the `stage`
 	var stage = new PIXI.Container(0x000000, true);
+
+	//sets up charm
+	c = new Charm(PIXI);
+	
+	//sets up tink
+	t = new Tink (PIXI, renderer.view);
+	pointer = t.makePointer();
 	
 	function loadProgressHandler(loader, resource) {
 
@@ -64,20 +70,15 @@
 		obj.interactive = true;
 		obj.isHeld = false;
 		obj.text = "";
+		t.makeDraggable(obj);
 		stage.addChild(obj);
 
 		
-		obj.on('mousedown', () => {this.isHeld=true; oldPointerY = mouseY;});
+		obj.on('mousedown', () => {this.isHeld=true;console.log(this.id);});
 		obj.on('mousemove', this.drag);
 		obj.on('mouseup',()=>{this.isHeld=false;})
- 
-		obj.on('touchstart', () => {this.isHeld=true;});
-		obj.on('touchmove', this.drag);
-		obj.on('touchend',()=>{this.isHeld=false;})
 
-		
-
-		this.resetPos = function(XorY){
+		obj.resetPos = function(XorY){
 			if(!this.isHeld){
 				if (XorY == "x"){
 					c.slide(this, 0, this.y, 5);
@@ -87,38 +88,24 @@
 				}
 			}
 		}
-		this.drag = function(event){
-			//console.log(this.id);
+
+		obj.drag = function(event){
 			if(this.isHeld){
+				
 				this.position.y = event.data.getLocalPosition(stage).y-150;
 				this.position.x = event.data.getLocalPosition(stage).x-150;
 			} 
 		}
 
 	}
-/*
-	BlackCard.prototype = new Card(renderer.height);
-	function BlackCard(){
-		//this.setTexture(PIXI.loader.resources["BlackCard.png"].texture);
-	    this.width = renderer.width*1.07;
-	    this.originY = renderer.height*0.7;
-	    this.position.x = -0.035*renderer.width;
-	    this.position.y = renderer.height;
-	    this.height = renderer.height*1.5;
-	}
-	BlackCard.prototype.drag = function(event){
-		if(this.isHeld && event.datthis.getLocalPosition(stage).y-150 < renderer.height*0.7){
-			this.position.y=event.data.getLocalPosition(stage).y-150;
-		} 
-	}
-*/
+
 	function setup() {
 		renderer.backgroundColor = 0x003D30;
 	    for (let i = 0; i< 7; i++){
 	        cards[i] = new PIXI.Sprite();
 	    	makeCard(cards[i], i);
+	    	t.makeDraggable(cards[i]);
 	    }
-	   //mainBlackCard = new BlackCard();
 	    gameLoop();
 	}
 
@@ -151,9 +138,10 @@
 
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
-		for (let i = 0; i<cards.length; i++){
-			c.update();
-		}
+		
+		c.update();
+		t.update();
+
 		state();
 
 		//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
