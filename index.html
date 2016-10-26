@@ -3,6 +3,7 @@
 <head>
 	<title>test</title>
 	<script type="text/javascript" src="pixi.min.js"></script>
+	<script type="text/javascript" src="charm/bin/charm.js"></script>
 
 </head>
 <body style = "font-size:0; padding:0; margin:0">
@@ -10,6 +11,9 @@
 	//make sure PIXI is working
 	console.log(PIXI); 
 
+	//sets up charm
+	c = new Charm(PIXI);
+	
 	//initializes variables
 	var cards = [];
 	var state = firstFunc;
@@ -48,48 +52,49 @@
 		.load (setup);
 	
 
-	//inherits PIXI.Sprite() and then configues some properties of it
-	Card.prototype = new PIXI.Sprite(); 
+
 	//constructor for Card
-	function Card(yPos){
-		this.setTexture(PIXI.loader.resources["BlankCard.png"].texture);
-		this.id = yPos/20;
-		this.width = renderer.width;
-		this.height = renderer.height;
-		this.position.y = renderer.height-yPos;
-		this.originX = originY = 0;
-		this.interactive = true;
-		this.isHeld = false;
-		this.text = "";
+	function makeCard(obj, id){
+		obj.setTexture(PIXI.loader.resources["BlankCard.png"].texture);
+		obj.id = id;
+		obj.width = renderer.width;
+		obj.height = renderer.height;
+		obj.y = renderer.height;
+		obj.originX = originY = 0;
+		obj.interactive = true;
+		obj.isHeld = false;
+		obj.text = "";
+		stage.addChild(obj);
 
-		this.on('mousedown', () => {this.isHeld=true; oldPointerY = mouseY;});
-		this.on('mousemove', this.drag);
-		this.on('mouseup',()=>{this.isHeld=false;})
+		
+		obj.on('mousedown', () => {this.isHeld=true; oldPointerY = mouseY;});
+		obj.on('mousemove', this.drag);
+		obj.on('mouseup',()=>{this.isHeld=false;})
  
-		this.on('touchstart', () => {this.isHeld=true;});
-		this.on('touchmove', this.drag);
-		this.on('touchend',()=>{this.isHeld=false;})
+		obj.on('touchstart', () => {this.isHeld=true;});
+		obj.on('touchmove', this.drag);
+		obj.on('touchend',()=>{this.isHeld=false;})
 
-		stage.addChild(this);
-	}
-	Card.prototype.resetPos = function(XorY){
-		if(!this.isHeld){
+		
 
-			if (XorY == "x"){
-				if (this.position.x<-20){this.position.x += renderer.width*0.01;}
-				if (this.position.x>20){this.position.x -= renderer.width*0.01;}
-			}
-			if (XorY == "y"){
-				if (this.position.y - this.originY < -20){this.position.y += renderer.height*0.01;}
-				if (this.position.y - this.originY > 20){this.position.y -= renderer.height*0.01;}
+		this.resetPos = function(XorY){
+			if(!this.isHeld){
+				if (XorY == "x"){
+					c.slide(this, 0, this.y, 5);
+				}
+				if (XorY == "y"){
+					c.slide(this, this.x, this.originY, 20);
+				}
 			}
 		}
-	}
-	Card.prototype.drag = function(event){
-		if(this.isHeld){
-			this.position.y = event.data.getLocalPosition(stage).y-150;
-			this.position.x = event.data.getLocalPosition(stage).x-150;
-		} 
+		this.drag = function(event){
+			//console.log(this.id);
+			if(this.isHeld){
+				this.position.y = event.data.getLocalPosition(stage).y-150;
+				this.position.x = event.data.getLocalPosition(stage).x-150;
+			} 
+		}
+
 	}
 /*
 	BlackCard.prototype = new Card(renderer.height);
@@ -102,16 +107,16 @@
 	    this.height = renderer.height*1.5;
 	}
 	BlackCard.prototype.drag = function(event){
-		if(this.isHeld && event.data.getLocalPosition(stage).y-150 < renderer.height*0.7){
+		if(this.isHeld && event.datthis.getLocalPosition(stage).y-150 < renderer.height*0.7){
 			this.position.y=event.data.getLocalPosition(stage).y-150;
 		} 
 	}
 */
 	function setup() {
 		renderer.backgroundColor = 0x003D30;
-	    
-	    for (let i = 0; i< 8; i++){
-	        cards.push(new Card(i*20));
+	    for (let i = 0; i< 7; i++){
+	        cards[i] = new PIXI.Sprite();
+	    	makeCard(cards[i], i);
 	    }
 	   //mainBlackCard = new BlackCard();
 	    gameLoop();
@@ -121,36 +126,34 @@
 	var frame = 0;
 	function firstFunc(){
 		for (let i = 0; i<cards.length; i++){
-			console.log(cards[i].position.y +", "+ cards[i].id);
-			cards[i].position.y-=renderer.height*0.00222;
+			c.slide(cards[i], cards[i].x, cards[i].id*200);
+				//c.slide(cards[i], cards[i].x, cards[i].id*150, 30);
 		}
-		console.log("--------");
-		frame++;
-		if (frame>60){
-			state = setCardOriginY;
-		}
-
+		 state = play;
+	}
 		
-	}
+	
 
-	function setCardOriginY(){
-		for (let i = 0; i<cards.length; i++){
-			cards[i].originY = cards[i].position.y;
-		}
-		console.log(stage);
-		state = play;
-	}
 
 	function play(){
 		for (let i = 0; i<cards.length; i++){
-			cards[i].resetPos("x");
-		}
+			//console.log(cards[i].originY);
+			//cards[i].resetPos("y");
+		}//.slide(cards[1], cards[0].position.x, 500);
+			//for ( var i = 0; i< cards.length; i++){
+			//	console.log(cards[i].originY)
+			//}
+			//	console.log(cards[i].position.y);
+		//}
+		//state = null;
 	}
 	
 
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
-
+		for (let i = 0; i<cards.length; i++){
+			c.update();
+		}
 		state();
 
 		//Tell the `renderer` to `render` the `stage` (DO THIS LAST)
