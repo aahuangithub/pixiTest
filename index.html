@@ -109,33 +109,16 @@
 	    gameLoop();
 	}
 
-	
-	var frame = 0;
+
 	function firstFunc(){
 		for (let i = 0; i<cards.length; i++){
 			c.slide(cards[i], cards[i].x, cards[i].id*200);
 				//c.slide(cards[i], cards[i].x, cards[i].id*150, 30);
 		}
-		 state = play;
+		 state = asd;
 	}
 		
-	
-
-
-	function play(){
-		for (let i = 0; i<cards.length; i++){
-			//console.log(cards[i].originY);
-			//cards[i].resetPos("y");
-		}//.slide(cards[1], cards[0].position.x, 500);
-			//for ( var i = 0; i< cards.length; i++){
-			//	console.log(cards[i].originY)
-			//}
-			//	console.log(cards[i].position.y);
-		//}
-		//state = null;
-	}
-	
-
+	function asd(){}
 	function gameLoop() {
 		requestAnimationFrame(gameLoop);
 		
